@@ -10,6 +10,8 @@ const AuthModal = ({setShowModal, isSignUp}) => {
         setShowModal(false)
     }
 
+    console.log(email, password, confirmPassword)
+
     const handleSubmit = (e) => {
         e.preventDefault()
         try {
