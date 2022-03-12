@@ -1,4 +1,5 @@
 const ChatHeader = () => {
+
     return (
         <div className="chat-container-header">
             <div className="profile">
