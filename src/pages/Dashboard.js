@@ -6,7 +6,9 @@ import axios from "axios"
 
 const Dashboard = () => {
     const [user, setUser] = useState(null)
+    const [genderedUsers, setGenderedUsers] = useState(null)
     const [ cookies, setCookie, removeCookie] = useCookies(['user'])
+    const [lastDirection, setLastDirection] = useState()
 
 
     const userId = cookies.UserId
@@ -22,36 +24,24 @@ const Dashboard = () => {
         }
     }
 
+    const getGenderedUsers = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/gendered-users', {
+                params: { gender: user?.gender_interest }
+            })
+            setGenderedUsers(response.data)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     useEffect(() => {
         getUser()
-    }, [])
+        getGenderedUsers()
+    }, [user, genderedUsers])
 
-    console.log('user', user)
 
 
-    const characters = [
-        {
-            name: 'Richard Hendricks',
-            url: 'https://images.pexels.com/photos/7715384/pexels-photo-7715384.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
-        },
-        {
-            name: 'Erlich Bachman',
-            url: 'https://images.pexels.com/photos/7715384/pexels-photo-7715384.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
-        },
-        {
-            name: 'Monica Hall',
-            url: 'https://images.pexels.com/photos/7715384/pexels-photo-7715384.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
-        },
-        {
-            name: 'Jared Dunn',
-            url: 'https://images.pexels.com/photos/7715384/pexels-photo-7715384.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
-        },
-        {
-            name: 'Dinesh Chugtai',
-            url: 'https://images.pexels.com/photos/7715384/pexels-photo-7715384.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
-        }
-    ]
-    const [lastDirection, setLastDirection] = useState()
 
     const swiped = (direction, nameToDelete) => {
         console.log('removing: ' + nameToDelete)
@@ -63,20 +53,23 @@ const Dashboard = () => {
     }
 
     return (
+
+        <>
+        { user &&
         <div className="dashboard">
             <ChatContainer user={user}/>
             <div className="swipe-container">
                 <div className="card-container">
 
-                    {characters.map((character) =>
+                    {genderedUsers?.map((genderedUser) =>
                         <TinderCard
                             className='swipe'
-                            key={character.name}
-                            onSwipe={(dir) => swiped(dir, character.name)}
-                            onCardLeftScreen={() => outOfFrame(character.name)}>
-                            <div style={{ backgroundImage: 'url(' + character.url + ')' }}
+                            key={genderedUser.first_name}
+                            onSwipe={(dir) => swiped(dir, genderedUser.first_name)}
+                            onCardLeftScreen={() => outOfFrame(genderedUser.first_name)}>
+                            <div style={{ backgroundImage: 'url(' + genderedUser.url + ')' }}
                                  className='card'>
-                                <h3>{character.name}</h3>
+                                <h3>{genderedUser.first_name}</h3>
                             </div>
                         </TinderCard>
                     )}
@@ -86,7 +79,8 @@ const Dashboard = () => {
 
                 </div>
             </div>
-        </div>
+        </div>}
+        </>
     )
 }
 export default Dashboard
