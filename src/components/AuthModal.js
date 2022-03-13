@@ -16,8 +16,6 @@ const AuthModal = ({setShowModal, isSignUp}) => {
         setShowModal(false)
     }
 
-    console.log(email, password, confirmPassword)
-
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
